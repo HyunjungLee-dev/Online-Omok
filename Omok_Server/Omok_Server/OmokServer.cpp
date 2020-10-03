@@ -44,28 +44,21 @@ int main(int argc, char* argv[])
 	if (bind(hServSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
 		ErrorHandling("bind() error");
 	//listen
-	if (listen(hServSock, 5) == SOCKET_ERROR)
+	if (listen(hServSock, 2) == SOCKET_ERROR)
 		ErrorHandling("listen() error");
 
 	while (true)
 	{
 		clntAdrSz = sizeof(clntAdr);
 		hClntSock = accept(hServSock, (SOCKADDR*)&clntAdr, &clntAdrSz);
+	
+		WaitForSingleObject(hMutex, INFINITE);
+		clntSocks[clntCnt++] = hClntSock;
+		ReleaseMutex(hMutex);
 
-		if (clntCnt < MAX_CLNT)
-		{
-			WaitForSingleObject(hMutex, INFINITE);
-			clntSocks[clntCnt++] = hClntSock;
-			ReleaseMutex(hMutex);
+		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
+		printf("Connected client IP : %s \n", inet_ntoa(clntAdr.sin_addr));
 
-			hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
-			printf("Connected client IP : %s \n", inet_ntoa(clntAdr.sin_addr));
-		}
-		else
-		{
-			printf("Connection is not possible \n");
-			closesocket(hClntSock);
-		}
 		closesocket(hServSock);
 		WSACleanup(); //윈속 라이브러리 해제
 		return 0;
@@ -86,16 +79,32 @@ unsigned WINAPI HandleClnt(void* arg)
 	// 성공 시 수신한 바이트 수 (단 EOF 전송 시 0), 실패 시 SOCKET_ERROR 반환
 	while ((strLen = recv(hClntSock, msg, sizeof(msg), 0)) != 0)
 	{
-		/*1. recv 에러/종료 
-		  2. 플레이 돌  색에 따른 초기화
-		  3. 유저가 들어온것에 대한 확인
-		  4. 돌을 놓음으로 한쪽은 대기 한쪽은 플레이
-		  5. 오목 승패 판정*/
-
 
 	}
 
+	WaitForSingleObject(hMutex, INFINITE);
+	for (i = 0; i < clntCnt; i++) //remove disconnected client
+	{
+		if (hClntSock == clntSocks[i])
+		{
+			while (i++ < clntCnt - 1)
+				clntSocks[i] = clntSocks[i + i];
+			break;
+		}
+	}
+	clntCnt--;
+	ReleaseMutex(hMutex);
+	closesocket(hClntSock);
+	return 0;
+}
 
+void SendMsg(char* msg, int len)
+{
+	int i;
+	WaitForSingleObject(hMutex, INFINITE);
+	for (i = 0; i < clntCnt; i++)
+		send(clntSocks[i], msg, len, 0);
+	ReleaseMutex(hMutex);
 }
 
 void ErrorHandling(const char* msg)
