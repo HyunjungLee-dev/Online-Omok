@@ -8,13 +8,13 @@ using namespace std;
 
 unsigned WINAPI HandleClnt(void* arg);
 void SendMsg(char * msg, int len);
-void ErrorHandling(char* msg);
+void ErrorHandling(const char* msg);
 
 int clntCnt = 0;
 SOCKET clntSocks[MAX_CLNT];
 HANDLE hMutex;
 
-int main(int argc, char* argv[])
+int main()
 {
 	WSADATA wsaData;
 	SOCKET hServSock, hClntSock;
@@ -22,10 +22,6 @@ int main(int argc, char* argv[])
 	int clntAdrSz;
 	HANDLE hThread;
 
-	if (argc != 2) {
-		printf("Usage : %s <port> \n", argv[0]);
-		exit(1);
-	}
 
 	//윈속 초기화
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
@@ -38,7 +34,7 @@ int main(int argc, char* argv[])
 	memset(&servAdr, 0, sizeof(servAdr));
 	servAdr.sin_family = AF_INET;
 	servAdr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servAdr.sin_port = htons(atoi(argv[1]));
+	servAdr.sin_port = htons(9000);
 
 	//bind
 	if (bind(hServSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
