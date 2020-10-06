@@ -1,14 +1,13 @@
-#include <iostream>
-#include <Windows.h>
-#include <process.h>
-using namespace std;
+#include "MapDraw.h"
 
 //#define BUF_SIZE 100
 //#define NAME_SIZE 20
-//
-//unsigned WINAPI SendMsg(void* arg);
-//unsigned WINAPI RecvMsg(void* arg);
-void ErrorHandling(const char * msg);
+
+unsigned WINAPI SendMsg(void* arg);
+unsigned WINAPI RecvMsg(void* arg);
+void ErrorHandling(const char * msg);  
+
+int iPlayerNum;
 
 //char name[NAME_SIZE] = "[DEFAULT]";
 //char msg[BUF_SIZE];
@@ -22,11 +21,8 @@ int main()
 
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-	{
 		ErrorHandling("WSAStartup() error!");
-	}
 
-	//sprintf(name, "[%s]", argv[3]);
 	hSock = socket(PF_INET, SOCK_STREAM, 0);
 
 	memset(&servAdr, 0, sizeof(servAdr));
@@ -37,27 +33,35 @@ int main()
 	if (connect(hSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
 		ErrorHandling("connect() error");
 
-	//hSndThread =
-	//	(HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)&hSock, 0, NULL);
-	//hRcvThread =
-	//	(HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)&hSock, 0, NULL);
+	hSndThread =
+		(HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)&hSock, 0, NULL);
+	hRcvThread =
+		(HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)&hSock, 0, NULL);
 
-	//WaitForSingleObject(SendMsg, INFINITE);
-	//WaitForSingleObject(RecvMsg, INFINITE);
+	WaitForSingleObject(SendMsg, INFINITE);
+	WaitForSingleObject(RecvMsg, INFINITE);
 	closesocket(hSock);
 	WSACleanup();
 	return 0;
 }
 
-//unsigned WINAPI SendMsg(void* arg)
-//{
-//
-//}
-//
-//unsigned WINAPI RecvMsg(void* arg)
-//{
-//
-//}
+unsigned WINAPI SendMsg(void* arg)	  // sene thread main
+{
+	SOCKET hSock = *((SOCKET*)arg);
+	MapDraw  m_MapDraw;
+	
+	while (true)
+	{
+		m_MapDraw.printMap(20, 20);
+	}
+	return 0;
+}
+
+unsigned WINAPI RecvMsg(void* arg)	// read thread main
+{
+
+	return 0;
+}
 
 void ErrorHandling(const char * msg)
 {
@@ -65,3 +69,4 @@ void ErrorHandling(const char * msg)
 	fputc('\n', stderr);
 	exit(1);
 }
+

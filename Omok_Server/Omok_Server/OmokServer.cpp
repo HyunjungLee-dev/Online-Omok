@@ -47,6 +47,9 @@ int main()
 	{
 		clntAdrSz = sizeof(clntAdr);
 		hClntSock = accept(hServSock, (SOCKADDR*)&clntAdr, &clntAdrSz);
+
+		if (clntCnt >= 2)
+			continue;
 	
 		WaitForSingleObject(hMutex, INFINITE);
 		clntSocks[clntCnt++] = hClntSock;
@@ -60,11 +63,6 @@ int main()
 		return 0;
 	}
 }
-
-//게임 전반적인 데이터를 관리(패킷)
-// 돌[][], 돌의 색깔, 유저(2명)의 정보, 해당턴 player msg, 게임 상태
-// 유저 : 돌색, 승,패
-//오목판의 오목의 여부 확인
 
 unsigned WINAPI HandleClnt(void* arg)
 {

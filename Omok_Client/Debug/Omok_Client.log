@@ -1,4 +1,3 @@
-﻿  OmokClient.cpp
-c:\users\a07\documents\github\hyunjunglee\hyunjunglee\online-omok\omok_client\omokclient.cpp(21): warning C4101: 'hRcvThread' :참조되지 않은 지역 변수입니다.
-c:\users\a07\documents\github\hyunjunglee\hyunjunglee\online-omok\omok_client\omokclient.cpp(21): warning C4101: 'hSndThread' :참조되지 않은 지역 변수입니다.
+﻿  MapDraw.cpp
+c:\users\a07\documents\github\hyunjunglee\hyunjunglee\online-omok\omok_client\mapdraw.h(13): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
   Omok_Client.vcxproj -> C:\Users\A07\Documents\GitHub\HyunjungLEE\Hyunjunglee\Online-Omok\Omok_Client\Debug\Omok_Client.exe

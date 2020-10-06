@@ -140,7 +140,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MapDraw.cpp" />
     <ClCompile Include="OmokClient.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MapDraw.h" />
+    <ClInclude Include="Mecro.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
