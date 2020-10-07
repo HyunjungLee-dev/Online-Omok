@@ -20,7 +20,7 @@ int main()
 	SOCKET hServSock, hClntSock;
 	SOCKADDR_IN servAdr, clntAdr;
 	int clntAdrSz;
-	HANDLE hThread;
+	HANDLE hThread[MAX_CLNT];
 
 
 	//윈속 초기화
@@ -50,18 +50,18 @@ int main()
 
 		if (clntCnt >= 2)
 			continue;
-	
+
 		WaitForSingleObject(hMutex, INFINITE);
 		clntSocks[clntCnt++] = hClntSock;
 		ReleaseMutex(hMutex);
 
-		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
+		hThread[clntCnt-1] = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
 		printf("Connected client IP : %s \n", inet_ntoa(clntAdr.sin_addr));
-
+	}
 		closesocket(hServSock);
 		WSACleanup(); //윈속 라이브러리 해제
 		return 0;
-	}
+	
 }
 
 unsigned WINAPI HandleClnt(void* arg)

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <Windows.h>
 #include <process.h>
+#include <conio.h>
 using namespace std;
 
 enum KEY
@@ -12,4 +13,17 @@ enum KEY
 	KEY_DOWN = 80,
 	KEY_ESC = 27,
 	KEY_DROP = 13,	//Enter
+};
+
+enum GAMESTATE
+{
+	WAITING,
+	START,
+	END
+};
+
+enum OMOK_BOARD_SIZE
+{
+	WIDTH = 20,
+	HEIGHT = 20
 };

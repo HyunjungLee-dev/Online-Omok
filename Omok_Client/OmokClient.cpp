@@ -1,13 +1,13 @@
-#include "MapDraw.h"
+#include "OmokManager.h"
 
-//#define BUF_SIZE 100
-//#define NAME_SIZE 20
+#define BUF_SIZE 100
+#define NAME_SIZE 20
 
 unsigned WINAPI SendMsg(void* arg);
 unsigned WINAPI RecvMsg(void* arg);
 void ErrorHandling(const char * msg);  
 
-int iPlayerNum;
+OmokManager m_OmockManager;
 
 //char name[NAME_SIZE] = "[DEFAULT]";
 //char msg[BUF_SIZE];
@@ -45,20 +45,25 @@ int main()
 	return 0;
 }
 
-unsigned WINAPI SendMsg(void* arg)	  // sene thread main
+unsigned WINAPI SendMsg(void* arg)	  // send thread main
 {
 	SOCKET hSock = *((SOCKET*)arg);
-	MapDraw  m_MapDraw;
 	
 	while (true)
-	{
-		m_MapDraw.printMap(20, 20);
+	{       
+		
 	}
 	return 0;
 }
 
 unsigned WINAPI RecvMsg(void* arg)	// read thread main
 {
+	SOCKET hSock = *((SOCKET*)arg);
+
+	while (true)
+	{
+		m_OmockManager.DrawMap();
+	}
 
 	return 0;
 }
