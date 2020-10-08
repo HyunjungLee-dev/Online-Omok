@@ -3,14 +3,14 @@
 #define BUF_SIZE 100
 #define NAME_SIZE 20
 
-unsigned WINAPI SendMsg(void* arg);
-unsigned WINAPI RecvMsg(void* arg);
-void ErrorHandling(const char * msg);  
+unsigned WINAPI SendMsg(void * arg);
+unsigned WINAPI RecvMsg(void * arg);
+void ErrorHandling(const char * msg);
+void printMap(int Width, int Height);
 
-OmokManager m_OmockManager;
-
-//char name[NAME_SIZE] = "[DEFAULT]";
-//char msg[BUF_SIZE];
+char name[NAME_SIZE] = "[DEFAULT]";
+char msg[BUF_SIZE];
+OmokManager m_OmokManager;
 
 int main()
 {
@@ -19,9 +19,10 @@ int main()
 	SOCKADDR_IN servAdr;
 	HANDLE hSndThread, hRcvThread;
 
-
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+	{
 		ErrorHandling("WSAStartup() error!");
+	}
 
 	hSock = socket(PF_INET, SOCK_STREAM, 0);
 
@@ -31,47 +32,70 @@ int main()
 	servAdr.sin_port = htons(9000);
 
 	if (connect(hSock, (SOCKADDR*)&servAdr, sizeof(servAdr)) == SOCKET_ERROR)
+	{
 		ErrorHandling("connect() error");
+	}
 
-	hSndThread =
-		(HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)&hSock, 0, NULL);
-	hRcvThread =
-		(HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)&hSock, 0, NULL);
+	hSndThread = (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)&hSock, 0, NULL);
+	hRcvThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)&hSock, 0, NULL);
 
-	WaitForSingleObject(SendMsg, INFINITE);
-	WaitForSingleObject(RecvMsg, INFINITE);
+	WaitForSingleObject(hSndThread, INFINITE);
+	WaitForSingleObject(hRcvThread, INFINITE);
 	closesocket(hSock);
 	WSACleanup();
 	return 0;
 }
 
-unsigned WINAPI SendMsg(void* arg)	  // send thread main
+unsigned WINAPI SendMsg(void * arg)   // send thread main
 {
 	SOCKET hSock = *((SOCKET*)arg);
-	
-	while (true)
-	{       
-		
-	}
-	return 0;
-}
+	char nameMsg[NAME_SIZE + BUF_SIZE];
 
-unsigned WINAPI RecvMsg(void* arg)	// read thread main
-{
-	SOCKET hSock = *((SOCKET*)arg);
-
-	while (true)
+	while (1)
 	{
-		m_OmockManager.DrawMap();
+		cin >> msg;
+
+		if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n"))
+		{
+			closesocket(hSock);
+			exit(0);
+		}
+
+		sprintf(nameMsg, "%s %s", name, msg);
+		send(hSock, nameMsg, strlen(nameMsg), 0);
 	}
 
 	return 0;
 }
 
-void ErrorHandling(const char * msg)
+unsigned WINAPI RecvMsg(void * arg)   // read thread main
 {
-	fputs(msg, stderr);
-	fputc('\n', stderr);
+	int hSock = *((SOCKET*)arg);
+	char nameMsg[NAME_SIZE + BUF_SIZE];
+	int strLen;
+
+	m_OmokManager.DrawMap();
+
+	while (1)
+	{
+
+		strLen = recv(hSock, nameMsg, NAME_SIZE + BUF_SIZE - 1, 0);
+
+		if (strLen == -1)
+			return -1;
+
+		nameMsg[strLen] = 0;
+
+		cout << nameMsg << "\n";
+	}
+
+	return 0;
+}
+
+void ErrorHandling(const char *msg)
+{
+	cout << msg << "\n";
 	exit(1);
 }
+
 

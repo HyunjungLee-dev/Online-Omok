@@ -7,7 +7,7 @@ using namespace std;
 #define MAX_CLNT 2
 
 unsigned WINAPI HandleClnt(void* arg);
-void SendMsg(char * msg, int len);
+void SendMsg(char * msg);
 void ErrorHandling(const char* msg);
 
 int clntCnt = 0;
@@ -70,10 +70,11 @@ unsigned WINAPI HandleClnt(void* arg)
 	int strLen = 0, i;
 	char msg[BUF_SIZE];
 
+	SendMsg(msg);
+
 	// 성공 시 수신한 바이트 수 (단 EOF 전송 시 0), 실패 시 SOCKET_ERROR 반환
 	while ((strLen = recv(hClntSock, msg, sizeof(msg), 0)) != 0)
 	{
-
 	}
 
 	WaitForSingleObject(hMutex, INFINITE);
@@ -92,12 +93,18 @@ unsigned WINAPI HandleClnt(void* arg)
 	return 0;
 }
 
-void SendMsg(char* msg, int len)
+void SendMsg(char* msg)
 {
 	int i;
 	WaitForSingleObject(hMutex, INFINITE);
+
+
 	for (i = 0; i < clntCnt; i++)
-		send(clntSocks[i], msg, len, 0);
+	{
+		sprintf(msg, "Play%d가 들어오셨습니다", clntCnt, msg);
+		send(clntSocks[i], msg, strlen(msg), 0);
+	}
+
 	ReleaseMutex(hMutex);
 }
 

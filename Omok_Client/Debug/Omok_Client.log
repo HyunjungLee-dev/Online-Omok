@@ -1,3 +1,1 @@
-﻿  OmokClient.cpp
-d:\github\online-omok\omok_client\mapdraw.h(13): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
-  Omok_Client.vcxproj -> D:\Github\Online-Omok\Omok_Client\Debug\Omok_Client.exe
+﻿  Omok_Client.vcxproj -> C:\Users\A07\Documents\GitHub\HyunjungLEE\Hyunjunglee\Online-Omok\Omok_Client\Debug\Omok_Client.exe

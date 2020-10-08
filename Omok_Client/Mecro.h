@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <process.h>
 #include <conio.h>
+#include <string>
 using namespace std;
 
 enum KEY
@@ -27,3 +28,4 @@ enum OMOK_BOARD_SIZE
 	WIDTH = 20,
 	HEIGHT = 20
 };
+
