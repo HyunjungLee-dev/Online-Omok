@@ -1,14 +1,11 @@
 #include "OmokManager.h"
 
-#define BUF_SIZE 100
-#define NAME_SIZE 20
+#define BUF_SIZE 1024
 
 unsigned WINAPI SendMsg(void * arg);
 unsigned WINAPI RecvMsg(void * arg);
 void ErrorHandling(const char * msg);
-void printMap(int Width, int Height);
 
-char name[NAME_SIZE] = "[DEFAULT]";
 char msg[BUF_SIZE];
 OmokManager m_OmokManager;
 
@@ -49,7 +46,7 @@ int main()
 unsigned WINAPI SendMsg(void * arg)   // send thread main
 {
 	SOCKET hSock = *((SOCKET*)arg);
-	char nameMsg[NAME_SIZE + BUF_SIZE];
+	//char nameMsg[NAME_SIZE + BUF_SIZE];
 
 	while (1)
 	{
@@ -61,8 +58,8 @@ unsigned WINAPI SendMsg(void * arg)   // send thread main
 			exit(0);
 		}
 
-		sprintf(nameMsg, "%s %s", name, msg);
-		send(hSock, nameMsg, strlen(nameMsg), 0);
+	//	sprintf(nameMsg, "%s %s", name, msg);
+	//	send(hSock, nameMsg, strlen(nameMsg), 0);
 	}
 
 	return 0;
@@ -71,22 +68,17 @@ unsigned WINAPI SendMsg(void * arg)   // send thread main
 unsigned WINAPI RecvMsg(void * arg)   // read thread main
 {
 	int hSock = *((SOCKET*)arg);
-	char nameMsg[NAME_SIZE + BUF_SIZE];
+	char msg[BUF_SIZE];
 	int strLen;
 
 	m_OmokManager.DrawMap();
 
 	while (1)
 	{
-
-		strLen = recv(hSock, nameMsg, NAME_SIZE + BUF_SIZE - 1, 0);
+		strLen = recv(hSock, msg, BUF_SIZE - 1, 0);
 
 		if (strLen == -1)
 			return -1;
-
-		nameMsg[strLen] = 0;
-
-		cout << nameMsg << "\n";
 	}
 
 	return 0;

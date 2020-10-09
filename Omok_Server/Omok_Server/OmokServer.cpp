@@ -1,11 +1,12 @@
 #include <windows.h>
 #include <iostream>
 #include <process.h>
+#include "Mecro.h"
 using namespace std;
 
-#define BUF_SIZE 100
-#define MAX_CLNT 2
-
+#define BUF_SIZE 1024
+#define MAX_CLNT 2 // 흑, 백
+ 
 unsigned WINAPI HandleClnt(void* arg);
 void SendMsg(char * msg);
 void ErrorHandling(const char* msg);
@@ -20,7 +21,7 @@ int main()
 	SOCKET hServSock, hClntSock;
 	SOCKADDR_IN servAdr, clntAdr;
 	int clntAdrSz;
-	HANDLE hThread[MAX_CLNT];
+	HANDLE hThread;
 
 
 	//윈속 초기화
@@ -48,14 +49,18 @@ int main()
 		clntAdrSz = sizeof(clntAdr);
 		hClntSock = accept(hServSock, (SOCKADDR*)&clntAdr, &clntAdrSz);
 
-		if (clntCnt >= 2)
+		if (clntCnt >= MAX_CLNT)
+		{
+			printf("연결 가능 클라이언트 수 초과\n");
 			continue;
+		}
 
+		//생성된 클라이언트 소켓을 배열에
 		WaitForSingleObject(hMutex, INFINITE);
 		clntSocks[clntCnt++] = hClntSock;
 		ReleaseMutex(hMutex);
 
-		hThread[clntCnt-1] = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
+		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
 		printf("Connected client IP : %s \n", inet_ntoa(clntAdr.sin_addr));
 	}
 		closesocket(hServSock);
@@ -70,11 +75,42 @@ unsigned WINAPI HandleClnt(void* arg)
 	int strLen = 0, i;
 	char msg[BUF_SIZE];
 
-	SendMsg(msg);
+	OmokData* pRequest;
+	OmokData pResponse;
+	PLAYER_COLOR color;
+	// 클라이언트는 서버에 request(요청) 메세지를 보내고 
+	// 서버는 response(응답) 메세지를 보낸다
 
+	
+	//원형 두번째 인자 char*
 	// 성공 시 수신한 바이트 수 (단 EOF 전송 시 0), 실패 시 SOCKET_ERROR 반환
 	while ((strLen = recv(hClntSock, msg, sizeof(msg), 0)) != 0)
 	{
+		if (strLen == SOCKET_ERROR)
+		{
+			printf("클라이언트에서의 데이터 수신 실패\n");
+		}
+		else if (strLen == 0)
+			printf("클라이언트 연결이 종료 되었습니다.\n");
+
+		//클라이언트에서 받은 메세지를 확인하고 메세지를 보낸다.
+		pRequest = (OmokData*)msg;
+		switch (pRequest->DataActionType)
+		{
+		case AT_COLOR_SET:
+			if (hClntSock == clntSocks[PLAYER_BLACK])
+			{
+				pResponse.DataActionType = AT_COLOR_SET;
+				color = PLAYER_BLACK;
+				pResponse.MainData = &color;
+				send(hClntSock, (char*)&pResponse, sizeof(pResponse), 0);
+				
+			}
+			break;
+		default:
+			break;
+		}
+
 	}
 
 	WaitForSingleObject(hMutex, INFINITE);
@@ -99,11 +135,6 @@ void SendMsg(char* msg)
 	WaitForSingleObject(hMutex, INFINITE);
 
 
-	for (i = 0; i < clntCnt; i++)
-	{
-		sprintf(msg, "Play%d가 들어오셨습니다", clntCnt, msg);
-		send(clntSocks[i], msg, strlen(msg), 0);
-	}
 
 	ReleaseMutex(hMutex);
 }
