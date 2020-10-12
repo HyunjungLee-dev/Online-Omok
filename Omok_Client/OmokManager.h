@@ -1,14 +1,6 @@
 #pragma once
 #include "MapDraw.h"
 
-struct GAMEINFO
-{
-	int	PlayerNum = -1;
-	int	NowPlayer = 0;
-	int WinPlayer = -1;
-	GAMESTATE GameState = WAITING ;
-};
-
 class OmokManager
 {
 private:

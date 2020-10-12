@@ -13,13 +13,14 @@ struct Cursor
 	PLAYER_COLOR Pcolor;
 };
 
+enum ACTION_TYPE
+{
+	AT_COLOR_SET
+};
+
 struct OmokData
 {
 	void* MainData;
 	ACTION_TYPE DataActionType;
 };
 
-enum ACTION_TYPE
-{
-	AT_COLOR_SET
-};

@@ -29,3 +29,34 @@ enum OMOK_BOARD_SIZE
 	HEIGHT = 20
 };
 
+
+enum PLAYER_COLOR
+{
+	NONE_COLOR=-1,
+	PLAYER_BLACK,
+	PLAYER_WHITE
+};
+
+struct User_Cursor
+{
+	int x;
+	int y;
+	PLAYER_COLOR Pcolor = NONE_COLOR;
+};
+
+enum ACTION_TYPE
+{
+	AT_COLOR_SET
+};
+
+struct OmokData
+{
+	void* MainData;
+	ACTION_TYPE DataActionType;
+};
+
+struct GameInfo
+{
+	ACTION_TYPE		ActionType = AT_COLOR_SET;
+	GAMESTATE	GameState = WAITING;
+};

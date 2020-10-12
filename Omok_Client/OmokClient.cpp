@@ -5,9 +5,12 @@
 unsigned WINAPI SendMsg(void * arg);
 unsigned WINAPI RecvMsg(void * arg);
 void ErrorHandling(const char * msg);
+void StateMsg();
 
 char msg[BUF_SIZE];
-OmokManager m_OmokManager;
+OmokManager g_OmokManager;
+User_Cursor g_Player;
+GameInfo g_Gameinfo;
 
 int main()
 {
@@ -46,17 +49,28 @@ int main()
 unsigned WINAPI SendMsg(void * arg)   // send thread main
 {
 	SOCKET hSock = *((SOCKET*)arg);
-	//char nameMsg[NAME_SIZE + BUF_SIZE];
+	OmokData m_Request;
 
-	while (1)
+	//지금 오목 플레이어 셋, 오목 전체 셋
+
+	while (true)
 	{
-		cin >> msg;
+		switch (g_Gameinfo.ActionType)
+		{
+		case AT_COLOR_SET:
+			m_Request.DataActionType = AT_COLOR_SET;
+			m_Request.MainData = NULL;
+			send(hSock, (char*)&m_Request, sizeof(m_Request),0);
+			break;
+		default:
+			break;
+		}
 
-		if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n"))
+		/*if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n"))
 		{
 			closesocket(hSock);
 			exit(0);
-		}
+		}*/
 
 	//	sprintf(nameMsg, "%s %s", name, msg);
 	//	send(hSock, nameMsg, strlen(nameMsg), 0);
@@ -69,19 +83,54 @@ unsigned WINAPI RecvMsg(void * arg)   // read thread main
 {
 	int hSock = *((SOCKET*)arg);
 	char msg[BUF_SIZE];
-	int strLen;
-
-	m_OmokManager.DrawMap();
+	int Size;
+	OmokData* pResponse;
+	PLAYER_COLOR* m_pColor;
 
 	while (1)
 	{
-		strLen = recv(hSock, msg, BUF_SIZE - 1, 0);
 
-		if (strLen == -1)
+		Size = recv(hSock, msg, BUF_SIZE - 1, 0);
+
+		if (Size == -1)
 			return -1;
+
+		pResponse = (OmokData*)msg;
+
+		switch (pResponse->DataActionType)
+		{
+		case AT_COLOR_SET:
+			m_pColor = (PLAYER_COLOR*)pResponse->MainData;
+			g_Player.Pcolor = *m_pColor;
+			printf("Player%d 입장", g_Player.Pcolor);
+			break;
+		default:
+			break;
+		}
+		//StateMsg();
+
 	}
+	g_OmokManager.DrawMap();
 
 	return 0;
+}
+
+void StateMsg()
+{
+	switch (g_Gameinfo.ActionType)
+	{
+	case AT_COLOR_SET:
+		if (g_Player.Pcolor != NONE_COLOR)
+		{
+			if (g_Player.Pcolor == PLAYER_BLACK)
+				printf("Player%d 입장", g_Player.Pcolor);
+			else if (g_Player.Pcolor == PLAYER_WHITE)
+				printf("white 입장");
+		}
+		break;
+	default:
+		break;
+	}
 }
 
 void ErrorHandling(const char *msg)
