@@ -69,6 +69,8 @@ int main()
 	
 }
 
+//턴,컴페어,윈
+
 unsigned WINAPI HandleClnt(void* arg)
 {
 	SOCKET hClntSock = *((SOCKET*)arg);
@@ -89,12 +91,12 @@ unsigned WINAPI HandleClnt(void* arg)
 		if (strLen == SOCKET_ERROR)
 		{
 			printf("클라이언트에서의 데이터 수신 실패\n");
-			exit(0);
+			//exit(0);
 		}
 		else if (strLen == 0)
 		{
 			printf("클라이언트 연결이 종료 되었습니다.\n");
-			exit(0);
+			//exit(0);
 		}
 
 		//클라이언트에서 받은 메세지를 확인하고 메세지를 보낸다.
@@ -113,8 +115,6 @@ unsigned WINAPI HandleClnt(void* arg)
 			pResponse.DataActionType = AT_COLOR_SET;
 			pResponse.MainData = &color;
 			send(hClntSock, (char*)&pResponse, sizeof(pResponse), 0);
-			break;
-		default:
 			break;
 		}
 

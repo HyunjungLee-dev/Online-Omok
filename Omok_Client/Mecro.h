@@ -37,12 +37,12 @@ enum PLAYER_COLOR
 	PLAYER_WHITE
 };
 
-struct User_Cursor
-{
-	int x;
-	int y;
-	PLAYER_COLOR Pcolor = NONE_COLOR;
-};
+//struct User_Cursor
+//{
+//	int x;
+//	int y;
+//	PLAYER_COLOR Pcolor = NONE_COLOR;
+//};
 
 enum ACTION_TYPE
 {

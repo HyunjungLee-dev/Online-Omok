@@ -143,11 +143,13 @@
     <ClCompile Include="MapDraw.cpp" />
     <ClCompile Include="OmokClient.cpp" />
     <ClCompile Include="OmokManager.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapDraw.h" />
     <ClInclude Include="Mecro.h" />
     <ClInclude Include="OmokManager.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

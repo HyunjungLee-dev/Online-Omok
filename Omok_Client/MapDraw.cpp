@@ -6,6 +6,16 @@ MapDraw::MapDraw()
 {
 }
 
+void MapDraw::DrawMidText(string str, int x, int y)
+{
+	if (x > str.size() / 2)
+		x -= str.size() / 2;
+	gotoxy(x, y);
+	cout << str;
+	return;
+}
+
+
 void MapDraw::printMap(int Width, int Height)
 {
    for (int y = 0; y < Height; y++)
@@ -33,6 +43,14 @@ void MapDraw::printMap(int Width, int Height)
 			}
 			cout << endl;
    }
+	return;
+}
+
+void MapDraw::DrawPoint(string str, int x, int y)
+{
+	gotoxy(x * 2, y);
+	cout << str;
+	gotoxy(-1, -1);
 	return;
 }
 

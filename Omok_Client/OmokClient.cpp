@@ -5,11 +5,12 @@
 unsigned WINAPI SendMsg(void * arg);
 unsigned WINAPI RecvMsg(void * arg);
 void ErrorHandling(const char * msg);
-void StateMsg();
+
+//전달만 차이 나머지는 그대로
 
 char msg[BUF_SIZE];
 OmokManager g_OmokManager;
-User_Cursor g_Player;
+//User_Cursor g_Player;
 GameInfo g_Gameinfo;
 
 int main()
@@ -62,8 +63,6 @@ unsigned WINAPI SendMsg(void * arg)   // send thread main
 			m_Request.MainData = NULL;
 			send(hSock, (char*)&m_Request, sizeof(m_Request),0);
 			break;
-		default:
-			break;
 		}
 
 		/*if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n"))
@@ -89,7 +88,7 @@ unsigned WINAPI RecvMsg(void * arg)   // read thread main
 
 	while (1)
 	{
-
+		g_OmokManager.DrawMap();
 		Size = recv(hSock, msg, BUF_SIZE - 1, 0);
 
 		if (Size == -1)
@@ -101,37 +100,14 @@ unsigned WINAPI RecvMsg(void * arg)   // read thread main
 		{
 		case AT_COLOR_SET:
 			m_pColor = (PLAYER_COLOR*)pResponse->MainData;
-			g_Player.Pcolor = *m_pColor;
-			printf("Player%d 입장", g_Player.Pcolor);
-			break;
-		default:
+			g_OmokManager.Init(*m_pColor);
 			break;
 		}
-		//StateMsg();
-
 	}
-	g_OmokManager.DrawMap();
 
 	return 0;
 }
 
-void StateMsg()
-{
-	switch (g_Gameinfo.ActionType)
-	{
-	case AT_COLOR_SET:
-		if (g_Player.Pcolor != NONE_COLOR)
-		{
-			if (g_Player.Pcolor == PLAYER_BLACK)
-				printf("Player%d 입장", g_Player.Pcolor);
-			else if (g_Player.Pcolor == PLAYER_WHITE)
-				printf("white 입장");
-		}
-		break;
-	default:
-		break;
-	}
-}
 
 void ErrorHandling(const char *msg)
 {
