@@ -22,6 +22,8 @@ void OmokManager::Init(PLAYER_COLOR color)
 		m_Player.SetStoneIcon(WHITETEAMICON);
 	}
 
+	
+
 }
 
 void OmokManager::DrawMap()

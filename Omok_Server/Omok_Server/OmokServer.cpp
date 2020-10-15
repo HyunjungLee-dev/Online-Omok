@@ -49,23 +49,29 @@ int main()
 		clntAdrSz = sizeof(clntAdr);
 		hClntSock = accept(hServSock, (SOCKADDR*)&clntAdr, &clntAdrSz);
 
-		if (clntCnt >= MAX_CLNT)
+		if (clntCnt < MAX_CLNT)
 		{
-			printf("연결 가능 클라이언트 수 초과\n");
-			continue;
+			//생성된 클라이언트 소켓을 배열에
+			WaitForSingleObject(hMutex, INFINITE);
+			clntSocks[clntCnt++] = hClntSock;
+			ReleaseMutex(hMutex);
+
+			hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
+			printf("Connected client IP : %s \n", inet_ntoa(clntAdr.sin_addr));
+
+		}
+		else
+		{
+			send(hClntSock, "접속 인원 초과", strlen("접속 인원 초과"), 0);
+			closesocket(hClntSock);
 		}
 
-		//생성된 클라이언트 소켓을 배열에
-		WaitForSingleObject(hMutex, INFINITE);
-		clntSocks[clntCnt++] = hClntSock;
-		ReleaseMutex(hMutex);
-
-		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
-		printf("Connected client IP : %s \n", inet_ntoa(clntAdr.sin_addr));
 	}
-		closesocket(hServSock);
-		WSACleanup(); //윈속 라이브러리 해제
-		return 0;
+
+	closesocket(hServSock);
+	WSACleanup(); //윈속 라이브러리 해제
+	
+	return 0;
 	
 }
 
@@ -91,12 +97,12 @@ unsigned WINAPI HandleClnt(void* arg)
 		if (strLen == SOCKET_ERROR)
 		{
 			printf("클라이언트에서의 데이터 수신 실패\n");
-			//exit(0);
+			break;
 		}
 		else if (strLen == 0)
 		{
 			printf("클라이언트 연결이 종료 되었습니다.\n");
-			//exit(0);
+			break;
 		}
 
 		//클라이언트에서 받은 메세지를 확인하고 메세지를 보낸다.
@@ -115,7 +121,17 @@ unsigned WINAPI HandleClnt(void* arg)
 			pResponse.DataActionType = AT_COLOR_SET;
 			pResponse.MainData = &color;
 			send(hClntSock, (char*)&pResponse, sizeof(pResponse), 0);
+			printf("clnt count %d", clntCnt);
 			break;
+		case AT_WAIT:
+			if (clntCnt == 2)
+			{
+				pResponse.DataActionType = AT_PLAY;
+				pResponse.MainData = NULL;
+				send(hClntSock, (char*)&pResponse, sizeof(pResponse), 0);
+			}
+			break;
+
 		}
 
 	}
@@ -133,6 +149,7 @@ unsigned WINAPI HandleClnt(void* arg)
 	clntCnt--;
 	ReleaseMutex(hMutex);
 	closesocket(hClntSock);
+
 	return 0;
 }
 

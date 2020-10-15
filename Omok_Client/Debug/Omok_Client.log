@@ -1,3 +1,5 @@
 ﻿  OmokClient.cpp
 c:\users\a07\documents\github\hyunjunglee\hyunjunglee\online-omok\omok_client\mapdraw.h(15): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+c:\users\a07\documents\github\hyunjunglee\hyunjunglee\online-omok\omok_client\omokclient.cpp(85): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\stdio.h(1774): note: 'sprintf' 선언을 참조하십시오.
   Omok_Client.vcxproj -> C:\Users\A07\Documents\GitHub\HyunjungLEE\Hyunjunglee\Online-Omok\Omok_Client\Debug\Omok_Client.exe

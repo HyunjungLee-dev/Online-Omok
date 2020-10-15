@@ -15,7 +15,9 @@ struct Cursor
 
 enum ACTION_TYPE
 {
-	AT_COLOR_SET
+	AT_COLOR_SET,
+	AT_WAIT,
+	AT_PLAY
 };
 
 struct OmokData

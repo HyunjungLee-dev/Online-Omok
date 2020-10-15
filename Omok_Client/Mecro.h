@@ -46,7 +46,8 @@ enum PLAYER_COLOR
 
 enum ACTION_TYPE
 {
-	AT_COLOR_SET
+	AT_COLOR_SET,
+	AT_WAIT
 };
 
 struct OmokData
